@@ -11,19 +11,24 @@
   <script src="../vue-metronome.js"></script>
   <style>
 .ghforkme { position: absolute; right: 0px; top: 0px; }
+FOOTER { text-align: right; }
 LABEL, BUTTON { font-size: 1.2rem; margin: 4px; white-space: nowrap; }
+.play-button { width: 8rem; }
+[v-cloak] { display: none; }
   </style>
   <title>metronome.js</title>
 </head>
 <body>
-  <a href="https://kazuhikoarase.github.io/">home</a>
-  <h1>metronome.js</h1>
-  <div>Metronome implementation by Web Audio API and Vue.js.</div>
-  <a class="ghforkme" href="https://github.com/kazuhikoarase/vue-metronome"
-    ><img width="149" height="149"
-    src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149"
-    class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
-  <div id="app" @mousedown.prevent>
+  <header>
+    <a href="https://kazuhikoarase.github.io/">home</a>
+    <h1>metronome.js</h1>
+    <div>Metronome implementation by Web Audio API and Vue.js.</div>
+    <a class="ghforkme" href="https://github.com/kazuhikoarase/vue-metronome/"
+      ><img width="149" height="149"
+      src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149"
+      class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+  </header>
+  <div id="app" v-cloak @mousedown.prevent>
 
     <metronome-view :intf="intf"></metronome-view>
 
@@ -45,6 +50,9 @@ LABEL, BUTTON { font-size: 1.2rem; margin: 4px; white-space: nowrap; }
         <input type="radio" name="gain" v-model="gain" :value="g"
           />{{g}}</label>
     </template>
+    <div>
+      <label><input type="checkbox" v-model="mute" />MUTE</label>
+    </div>
 
     <div>TEMPO</div>
     <template v-for="t in [40, 60, 80, 100, 120, 140, 160, 180, 200]">
@@ -54,26 +62,20 @@ LABEL, BUTTON { font-size: 1.2rem; margin: 4px; white-space: nowrap; }
     </template>
 
     <div>
-      <label><input type="checkbox" v-model="mute" />MUTE</label>
-    </div>
-
-    <div>
-      <button @click="start_clickHandler"
+      <button class="play-button" @click="start_clickHandler"
         > {{ playing? 'STOP' : 'START' }} </button>
+      <span>
     </div>
 
   </div>
+
   <script>
 
 new Vue({
   el: '#app',
   data: {
-    beat: 4,
-    gain: -30,
-    tempo: 120,
-    mute: false,
-    playing: false,
-    intf: null
+    beat: 4, gain: -30, tempo: 120, mute: false,
+    playing: false, intf: null
   },
   methods: {
     start_clickHandler: function() {
@@ -92,11 +94,11 @@ new Vue({
       this.playing = false;
       this.intf = null;
     }
-  },
-  mounted: function() {
   }
 });
 
   </script>
+
+  <footer><hr />Contents Copyright &copy; Kazuhiko Arase</footer>
 </body>
 </html>

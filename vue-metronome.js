@@ -1,3 +1,15 @@
+//---------------------------------------------------------------------
+//
+// vue-metronome.js
+//
+// Copyright (c) 2020 Kazuhiko Arase
+//
+// URL: https://github.com/kazuhikoarase/vue-metronome/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+
 'use strict'
 
 !function() {
