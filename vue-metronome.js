@@ -116,7 +116,7 @@
     metronomeView: {
       template:
         '<svg xmlns="http://www.w3.org/2000/svg"' +
-            ' style="x-display: none; overflow: hidden;"' +
+            ' style="overflow: hidden;"' +
             ' width="220" height="90"' +
             ' viewBox="0 0 220 90" >' +
           '<clipPath id="dspFrm">'+

@@ -9,9 +9,20 @@
    -->
   <script src="vue.js"></script>
   <script src="../vue-metronome.js"></script>
+  <style>
+.ghforkme { position: absolute; right: 0px; top: 0px; }
+LABEL, BUTTON { font-size: 1.2rem; margin: 4px; white-space: nowrap; }
+  </style>
   <title>metronome.js</title>
 </head>
 <body>
+  <a href="https://kazuhikoarase.github.io/">home</a>
+  <h1>metronome.js</h1>
+  <div>Metronome implementation by Web Audio API and Vue.js.</div>
+  <a class="ghforkme" href="https://github.com/kazuhikoarase/vue-metronome"
+    ><img width="149" height="149"
+    src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149"
+    class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
   <div id="app" @mousedown.prevent>
 
     <metronome-view :intf="intf"></metronome-view>
