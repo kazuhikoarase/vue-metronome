@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Metronome implementation by Web Audio API and Vue.js.",
   "author": "Kazuhiko Arase",
-  "main": "metronome.js"
+  "main": "metronome.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/kazuhikoarase/metronome-js.git"
