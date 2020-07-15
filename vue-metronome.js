@@ -14,6 +14,45 @@
 
 !function() {
 
+  var createPlayer = function() {
+    return {
+      audioContext: null,
+      audioprocessHandler: function(event) {},
+      stateHandler: function(type) {},
+      start: function() {
+
+        if (!this.audioContext) {
+
+          var bufferSize = 8192;
+          var numChannels = 1;
+          var audioContext = new AudioContext();
+
+          var gainNode = audioContext.createGain();
+          gainNode.gain.value = 1;
+          gainNode.connect(audioContext.destination);
+
+          var scriptNode = audioContext.
+            createScriptProcessor(bufferSize, 0, numChannels);
+
+          scriptNode.onaudioprocess = function(event) {
+            this.audioprocessHandler(event);
+          }.bind(this);
+
+          scriptNode.connect(gainNode);
+          this.audioContext = audioContext;
+          this.stateHandler('start');
+        }
+      },
+      stop: function() {
+        if (this.audioContext) {
+          this.audioContext.close();
+          this.audioContext = null;
+          this.stateHandler('stop');
+        }
+      }
+    };
+  };
+
   var components = {
     metronome: {
       template: '<span style="display:none;">metronome</span>',
@@ -25,31 +64,17 @@
       },
       data: function() {
         return {
-          audioContext: null,
+          player: null,
           reset: function() {}
         };
       },
-      computed: {
-        params: function() {
-          var beat = this.beat;
-          var tempo =  this.tempo;
-          var mute = this.mute;
-          var freq = 440 * Math.exp(/* E note */ 7 / 12 * Math.log(2) );
-          var vol = mute? 0 : Math.exp(this.gain / 20 * Math.log(10) );
-          var stepPerTime = tempo / 60;
-          return {
-            beat: beat, tempo: tempo, freq: freq, vol: vol,
-            stepPerTime: stepPerTime
-          };
-        }
-      },
-      methods: {
-        start: function() {
+      mounted: function() {
 
-          if (!this.audioContext) {
+        var player = createPlayer();
+        player.stateHandler = function(type) {
 
-            var bufferSize = 8192;
-            var numChannels = 1;
+          if (type == 'start') {
+
             var freq, vol, step, lastStep = -1;
             var outputBuffer, i, bufLen, c, chData;
 
@@ -65,7 +90,7 @@
             };
             var wave = square;
 
-            var audioContext = new AudioContext();
+            var audioContext = player.audioContext;
             var sampleRate = audioContext.sampleRate;
             var t = 0;
             var dt = 1 / sampleRate;
@@ -76,14 +101,7 @@
               t = 0;
             };
 
-            var gainNode = audioContext.createGain();
-            gainNode.gain.value = 1;
-            gainNode.connect(audioContext.destination);
-
-            var scriptNode = audioContext.
-              createScriptProcessor(bufferSize, 0, numChannels);
-
-            scriptNode.onaudioprocess = function(event) {
+            player.audioprocessHandler = function(event) {
 
               outputBuffer = event.outputBuffer;
               bufLen = outputBuffer.length;
@@ -109,22 +127,39 @@
 
             }.bind(this);
 
-            scriptNode.connect(gainNode);
-            this.audioContext = audioContext;
-            var _met = this;
+            var _this = this;
             this.$emit('start', {
               getTimestamp: function() { return t; },
-              getBeat: function() { return _met.params.beat; },
-              getTempo: function() { return _met.params.tempo; }
+              getBeat: function() { return _this.params.beat; },
+              getTempo: function() { return _this.params.tempo; }
             });
-          }
-        },
-        stop: function() {
-          if (this.audioContext) {
-            this.audioContext.close();
-            this.audioContext = null;
+
+          } else if (type == 'stop') {
             this.$emit('stop');
           }
+        }.bind(this);
+        this.player = player;
+      },
+      computed: {
+        params: function() {
+          var beat = this.beat;
+          var tempo =  this.tempo;
+          var mute = this.mute;
+          var freq = 440 * Math.exp(/* E note */ 7 / 12 * Math.log(2) );
+          var vol = mute? 0 : Math.exp(this.gain / 20 * Math.log(10) );
+          var stepPerTime = tempo / 60;
+          return {
+            beat: beat, tempo: tempo, freq: freq, vol: vol,
+            stepPerTime: stepPerTime
+          };
+        }
+      },
+      methods: {
+        start: function() {
+          this.player.start();
+        },
+        stop: function() {
+          this.player.stop();
         }
       }
     },
@@ -206,38 +241,32 @@
               lastTs = ts;
             }
 
-            if (ts == 0) {
-              // oops! unstable!!
+            t =  ts + (frmT - frmT0) / 1000;
+            tranT = (t * tempo / 120 + 0.75) % 1;
+
+            cOp = activeOpacity;
+            if (tranT < 0.5) {
+              lOp = activeOpacity;
+              rOp = defaultOpacity;
             } else {
+              lOp = defaultOpacity;
+              rOp = activeOpacity;
+            }
 
-              t =  ts + (frmT - frmT0) / 1000;
-              tranT = (t * tempo / 120 + 0.75) % 1;
+            if (this.cOp !== cOp) this.cOp = cOp;
+            if (this.lOp !== lOp) this.lOp = lOp;
+            if (this.rOp !== rOp) this.rOp = rOp;
 
-              cOp = activeOpacity;
-              if (tranT < 0.5) {
-                lOp = activeOpacity;
-                rOp = defaultOpacity;
-              } else {
-                lOp = defaultOpacity;
-                rOp = activeOpacity;
-              }
+            bi0 = Math.floor(tranT * _2barsLen);
+            bi1 = (bi0 + _2barsLen - 1) % _2barsLen;
+            bi0 = bi0 >= _barsLen? _2barsLen - 1  - bi0 : bi0;
+            bi1 = bi1 >= _barsLen? _2barsLen - 1  - bi1 : bi1;
 
-              if (this.cOp !== cOp) this.cOp = cOp;
-              if (this.lOp !== lOp) this.lOp = lOp;
-              if (this.rOp !== rOp) this.rOp = rOp;
-
-              bi0 = Math.floor(tranT * _2barsLen);
-              bi1 = (bi0 + _2barsLen - 1) % _2barsLen;
-              bi0 = bi0 >= _barsLen? _2barsLen - 1  - bi0 : bi0;
-              bi1 = bi1 >= _barsLen? _2barsLen - 1  - bi1 : bi1;
-
-              for (i = 0; i < _barsLen; i += 1) {
-                op = (i == bi0 || i == bi1)? activeOpacity : defaultOpacity;
-                if (bars[i].op !== op) {
-                  bars[i].op = op;
-                };
-              }
-
+            for (i = 0; i < _barsLen; i += 1) {
+              op = (i == bi0 || i == bi1)? activeOpacity : defaultOpacity;
+              if (bars[i].op !== op) {
+                bars[i].op = op;
+              };
             }
 
           } else {

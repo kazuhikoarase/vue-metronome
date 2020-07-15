@@ -14,12 +14,12 @@ LABEL, BUTTON { font-size: 1.2rem; margin: 0.2rem; white-space: nowrap; }
 .play-button { width: 8rem; }
 [v-cloak] { display: none; }
   </style>
-  <title>metronome.js</title>
+  <title>vue-metronome</title>
 </head>
 <body>
   <header>
     <a href="https://kazuhikoarase.github.io/">home</a>
-    <h1>metronome.js</h1>
+    <h1>vue-metronome</h1>
     <div>Metronome implementation by Web Audio API and Vue.js.</div>
     <a class="ghforkme" href="https://github.com/kazuhikoarase/vue-metronome/"
       ><img width="149" height="149"
@@ -31,7 +31,7 @@ LABEL, BUTTON { font-size: 1.2rem; margin: 0.2rem; white-space: nowrap; }
     <metronome-view :intf="intf"></metronome-view>
 
     <metronome ref="metronome"
-      :gain="gain" :tempo="tempo" :beat="beat" :mute="mute"
+      :gain="gain" :tempo="tempo" :beat="beat" :mute="mute" :pause="pause"
       @start="metronome_startHandler"
       @stop="metronome_stopHandler"></metronome>
 
@@ -72,7 +72,7 @@ LABEL, BUTTON { font-size: 1.2rem; margin: 0.2rem; white-space: nowrap; }
 new Vue({
   el: '#app',
   data: {
-    beat: 4, gain: -30, tempo: 120, mute: false,
+    beat: 4, gain: -30, tempo: 120, mute: false, pause: false,
     playing: false, intf: null
   },
   methods: {
