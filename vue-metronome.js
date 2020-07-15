@@ -36,13 +36,11 @@
           var mute = this.mute;
           var freq = 440 * Math.exp(/* E note */ 7 / 12 * Math.log(2) );
           var vol = mute? 0 : Math.exp(this.gain / 20 * Math.log(10) );
-          var numUnitsPerStep = 16 * Math.max(1, Math.ceil(120 / tempo) );
-          var stepPerTime = numUnitsPerStep * tempo / 60;
+          var stepPerTime = tempo / 60;
           return {
             beat: beat, tempo: tempo, freq: freq, vol: vol,
-            numUnitsPerStep: numUnitsPerStep,
             stepPerTime: stepPerTime
-          }; 
+          };
         }
       },
       methods: {
@@ -71,6 +69,8 @@
             var sampleRate = audioContext.sampleRate;
             var t = 0;
             var dt = 1 / sampleRate;
+            var gateT = 0;
+            var clickGateTime = 1000 * dt;
 
             this.reset = function() {
               t = 0;
@@ -94,10 +94,13 @@
                 step = Math.floor(t * this.params.stepPerTime);
 
                 if (lastStep != step) {
-                  freq = step % (this.params.beat * this.params.numUnitsPerStep) == 0?
+                  freq = step % this.params.beat == 0?
                       this.params.freq * 2 : this.params.freq;
-                  vol = step % this.params.numUnitsPerStep == 0? this.params.vol : 0;
+                  vol = this.params.vol;
+                  gateT = t + clickGateTime;
                   lastStep = step;
+                } else if (vol > 0 && t > gateT) {
+                  vol = 0;
                 }
 
                 chData[i] = vol * wave(2 * Math.PI * freq * t);
