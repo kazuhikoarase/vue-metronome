@@ -4,15 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport"
     content="width=device-width,initial-scale=1.0,user-scalable=no" />
-  <!--
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
-   -->
-  <script src="vue.js"></script>
   <script src="../vue-metronome.js"></script>
   <style>
 .ghforkme { position: absolute; right: 0px; top: 0px; }
+HEADER { margin-bottom: 0.5rem; }
 FOOTER { text-align: right; }
-LABEL, BUTTON { font-size: 1.2rem; margin: 4px; white-space: nowrap; }
+LABEL, BUTTON { font-size: 1.2rem; margin: 0.2rem; white-space: nowrap; }
 .play-button { width: 8rem; }
 [v-cloak] { display: none; }
   </style>
@@ -55,7 +53,7 @@ LABEL, BUTTON { font-size: 1.2rem; margin: 4px; white-space: nowrap; }
     </div>
 
     <div>TEMPO</div>
-    <template v-for="t in [40, 60, 80, 100, 120, 140, 160, 180, 200]">
+    <template v-for="t in [40, 60, 80, 100, 120, 140, 160, 180, 200, 220]">
       <label>
         <input type="radio" name="tempo" v-model="tempo" :value="t"
           @click="$refs.metronome.reset()" />{{t}}</label>

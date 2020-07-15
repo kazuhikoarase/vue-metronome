@@ -133,21 +133,21 @@
             ' viewBox="0 0 220 90" >' +
           '<clipPath id="dspFrm">'+
             '<rect fill="#000" stroke="none"' +
-            ' x="4" y="4" width="212" height="82" />' +
+            ' x="2" y="2" width="216" height="86" />' +
           '</clipPath>' +
           '<rect fill="#230" stroke="none" opacity="0.2"' +
-          ' x="0" y="0" width="220" height="90" />' +
+          ' x="0" y="0" width="220" height="90" rx="4" ry="4" />' +
           '<g clip-path="url(#dspFrm)">' +
-            '<circle ref="barAx" fill="#000" stroke="none" :opacity="cOp"' +
-              ' cx="110" cy="90" r="12" />' +
-            '<g v-for="bar in bars" :transform="bar.tran">' +
-              '<path ref="bars" fill="#000" stroke="none" :opacity="bar.op"' +
-                ' d="M-0.5 -16L-4.5 -80L0 -84L4.5 -80L0.5 -16Z" />' +
-            '</g>' +
             '<circle ref="lPoint" fill="#000" stroke="none" :opacity="lOp"' +
               ' :cx="pHGap" :cy="pVGap" :r="pRadius" />' +
             '<circle ref="rPoint" fill="#000" stroke="none" :opacity="rOp"' +
               ' :cx="220 - pHGap" :cy="pVGap" :r="pRadius" />' +
+            '<g v-for="bar in bars" :transform="bar.tran">' +
+              '<path ref="bars" fill="#000" stroke="none" :opacity="bar.op"' +
+                ' d="M-0.5 -18L-5 -84L0 -88L5 -84L0.5 -18Z" />' +
+            '</g>' +
+            '<circle ref="barAx" fill="#000" stroke="none" :opacity="cOp"' +
+              ' cx="110" cy="90" r="12" />' +
           '</g>' +
         '</svg>',
       props: {
@@ -155,7 +155,7 @@
       },
       data: function() {
         return {
-          pHGap: 24, pVGap: 20, pRadius: 16,
+          pHGap: 24, pVGap: 22, pRadius: 18,
           active: false, cOp: '0', lOp: '0', rOp: '0', bars: []
         };
       },
@@ -168,11 +168,12 @@
 
         var bars = [];
         !function() {
-          var l = 6;
+          var l = 5;
           for (var i = -l; i <= l; i += 1) {
             bars.push({
               n: i,
-              tran: 'translate(110 92) rotate(' + (i * 7.75) + ')',
+              tran: 'translate(110 95) rotate(' +
+                ( (i + Math.sin(i * 0.06) ) * 8.5) + ')',
               op: defaultOpacity
             });
           }
