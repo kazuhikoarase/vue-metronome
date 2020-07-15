@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+   -->
+  <script src="vue.js"></script>
+  <script src="../metronome.js"></script>
+  <title>metronome.js</title>
+</head>
+<body>
+  <div id="app" @mousedown.prevent>
+
+    <metronome-view :intf="intf"></metronome-view>
+
+    <metronome ref="metronome"
+      :gain="gain" :tempo="tempo" :beat="beat" :mute="mute"
+      @start="metronome_startHandler"
+      @stop="metronome_stopHandler"></metronome>
+
+    <div>BEAT</div>
+    <template v-for="b in [0, 1, 2, 3, 4, 5, 6, 7]">
+      <label>
+        <input type="radio" name="beat" v-model="beat" :value="b" 
+          @click="$refs.metronome.reset()" />{{b}}</label>
+    </template>
+
+    <div>GAIN</div>
+    <template v-for="g in [-50, -40, -30, -20, -10]">
+      <label>
+        <input type="radio" name="gain" v-model="gain" :value="g"
+          />{{g}}</label>
+    </template>
+
+    <div>TEMPO</div>
+    <template v-for="t in [40, 60, 80, 100, 120, 140, 160, 180, 200]">
+      <label>
+        <input type="radio" name="tempo" v-model="tempo" :value="t"
+          @click="$refs.metronome.reset()" />{{t}}</label>
+    </template>
+
+    <div>
+      <label><input type="checkbox" v-model="mute" />MUTE</label>
+    </div>
+
+    <div>
+      <button @click="start_clickHandler"
+        > {{ playing? 'STOP' : 'START' }} </button>
+    </div>
+
+  </div>
+  <script>
+
+new Vue({
+  el: '#app',
+  data: {
+    beat: 4,
+    gain: -30,
+    tempo: 120,
+    mute: false,
+    playing: false,
+    intf: null
+  },
+  methods: {
+    start_clickHandler: function() {
+      var metronome = this.$refs.metronome;
+      if (!this.playing) {
+        metronome.start();
+      } else {
+        metronome.stop();
+      }
+    },
+    metronome_startHandler: function(intf) {
+      this.playing = true;
+      this.intf = intf;
+    },
+    metronome_stopHandler: function() {
+      this.playing = false;
+      this.intf = null;
+    }
+  },
+  mounted: function() {
+  }
+});
+
+  </script>
+</body>
+</html>
