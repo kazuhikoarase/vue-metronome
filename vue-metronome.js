@@ -174,7 +174,7 @@
             ' x="2" y="2" width="216" height="86" />' +
           '</clipPath>' +
           '<rect fill="#230" stroke="none" opacity="0.2"' +
-          ' x="0" y="0" width="220" height="90" rx="4" ry="4" />' +
+          ' x="0" y="0" width="220" height="90" rx="8" ry="8" />' +
           '<g clip-path="url(#dspFrm)">' +
             '<circle ref="lPoint" fill="#000" stroke="none" :opacity="lOp"' +
               ' :cx="pHGap" :cy="pVGap" :r="pRadius" />' +
