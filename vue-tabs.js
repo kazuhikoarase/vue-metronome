@@ -20,18 +20,17 @@
         '<svg xmlns="http://www.w3.org/2000/svg"' +
           ' :width="sWidth" :height="sHeight"' +
           ' :view-box.camel="sViewBox">' +
-          '<rect x="0" y="0" :width="this.width" :height="this.height"' +
-            ' stroke="none" fill="#000" opacity="0.02"></rect>' +
-          '<path :d="\'M0 0L\' +width + \' \' + height" stroke="#0f0" fill="none"></path>' +
-          '<path :d="\'M\' +width + \' 0L0 \' + height" stroke="#f00" fill="none"></path>' +
-          '<path d="" stroke="#f00" fill="none"></path>' +
-          '<rect x="0" y="0" :width="this.width" :height="this.height"' +
+/*
+          '<rect x="0" y="0" :width="params.width" :height="params.height"' +
             ' stroke="none" fill="#000" opacity="0.1"></rect>' +
-          '<path v-for="hLine in hLines" :d="hLine" :style="hLineStyle"></path>' +
-          '<path v-for="vLine in vLines" :d="vLine" :style="vLineStyle"></path>' +
-          '<circle v-for="note in notes" :cx="note.x"' +
-            ' :cy="note.y" :r="noteRadius"' +
-            ' :style="note.open? openNoteStyle : noteStyle"></circle>' +
+          '<path :d="\'M0 0L\' + params.width + \' \' + params.height" stroke="#00c" fill="none"></path>' +
+          '<path :d="\'M\' + params.width + \' 0L0 \' + params.height" stroke="#00c" fill="none"></path>' +
+*/
+          '<path v-for="hLine in params.hLines" :d="hLine" :style="hLineStyle"></path>' +
+          '<path v-for="vLine in params.vLines" :d="vLine" :style="vLineStyle"></path>' +
+          '<circle v-for="point in params.points"' +
+            ' :cx="point.x" :cy="point.y" :r="params.noteRadius"' +
+            ' :style="point.open? openNoteStyle : noteStyle"></circle>' +
         '</svg></span>',
       props: {
         data: { type: Object, default: function() { return {
@@ -40,47 +39,54 @@
         }; } }
       },
       computed: {
-        sWidth: function() { return this.width + 'px'; },
-        sHeight: function() { return this.height + 'px'; },
+        sWidth: function() { return this.params.width + 'px'; },
+        sHeight: function() { return this.params.height + 'px'; },
         sViewBox: function() {
-          return '0 0 ' + this.width + ' ' + this.height;
+          return '0 0 ' + this.params.width + ' ' + this.params.height;
         },
         params: function() {
-          return { numFlets: 5 };
-        },
-        hLines: function() {
+
           var notes = this.data.notes;
-          var h = this.height - this.vGap * 2;
-          return notes.map(function(note, i) {
-            var y = this.vGap + (h / (notes.length - 1) ) * i;
-            return 'M' + this.hGap + ' ' + y +
-              'L' + (this.width - this.hGap) + ' ' + y;
-          }.bind(this) );
-        },
-        vLines: function() {
-          var numFlets = this.params.numFlets;
-          var w = this.width - this.hGap * 2;
-          var flets = [];
+          var numFlets = 5;
+          var hGap = 15;
+          var vGap = 6;
+          var width = numFlets * 10 + hGap * 2;
+          var height = notes.length * 10 + vGap * 2;
+          var noteRadius = 4;
+
+          var h = height - vGap * 2;
+          var w = width - hGap * 2;
+
+          var hLines = notes.map(function(note, i) {
+            var y = vGap + (h / (notes.length - 1) ) * i;
+            return 'M' + hGap + ' ' + y + 'L' + (width - hGap) + ' ' + y;
+          });
+
+          var vLines = [];
           for (var i = 0; i < numFlets; i += 1) {
-            var x = this.hGap + (w / (numFlets - 1) ) * i;
-            flets.push('M' + x + ' ' + this.vGap +
-              'L' + x + ' ' + (this.height - this.vGap) );
+            var x = hGap + (w / (numFlets - 1) ) * i;
+            vLines.push('M' + x + ' ' + vGap + 'L' + x + ' ' + (height - vGap) );
           }
-          return flets;
-        },
-        notes: function() {
-          var numFlets = this.params.numFlets;
-          var w = this.width - this.hGap * 2;
-          var notes = this.data.notes;
-          var h = this.height - this.vGap * 2;
-          return notes.map(function(note, i) {
+
+          var points = notes.map(function(note, i) {
             var n = notes[notes.length - i - 1];
             var open = n == 0;
-            var x = this.hGap + (w / (numFlets - 1) ) * (n - 0.5);
-            var y = this.vGap + (h / (notes.length - 1) ) * i;
+            var x = hGap + (w / (numFlets - 1) ) * (n - 0.5);
+            var y = vGap + (h / (notes.length - 1) ) * i;
             return { x: x, y: y, open: open };
-          }.bind(this) );
+          });
 
+          return {
+            numFlets: numFlets,
+            width: width,
+            height: height,
+            hGap: hGap,
+            vGap: vGap,
+            noteRadius: noteRadius,
+            hLines: hLines,
+            vLines: vLines,
+            points: points
+          };
         },
         hLineStyle: function() {
           return 'stroke: #000; fill: none;';
@@ -97,11 +103,7 @@
       },
       data: function() {
         return {
-          width: 120,
-          height: 100,
-          hGap: 20,
-          vGap: 30,
-          noteRadius: 4
+
         };
       }
     }
