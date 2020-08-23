@@ -30,6 +30,7 @@
     F:  { name: 'F',  notes: [ 2, 0, 1, 0 ] },
     Fm: { name: 'Fm', notes: [ 1, 0, 1, 3 ] },
 
+    G:  { name: 'G',  notes: [ 0, 2, 3, 2 ] },
     G7: { name: 'G7', notes: [ 0, 2, 1, 2 ] },
 
     Am: { name: 'Am', notes: [ 2, 0, 0, 0 ] },
