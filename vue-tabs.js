@@ -52,6 +52,8 @@
 */
           '<path v-for="hLine in params.hLines" :d="hLine" :style="hLineStyle"></path>' +
           '<path v-for="vLine in params.vLines" :d="vLine" :style="vLineStyle"></path>' +
+          '<path v-if="params.hOffset == 0" ' +
+          ' :d="params.vLines[0]" :style="vLineStyle" transform="translate(1.5 0)"></path>' +
           '<circle v-for="point in params.points"' +
             ' :cx="point.x" :cy="point.y" :r="params.noteRadius"' +
             ' :style="point.open? openNoteStyle : noteStyle"></circle>' +
@@ -106,6 +108,7 @@
             hGap: hGap,
             vGap: vGap,
             noteRadius: noteRadius,
+            hOffset: 0,
             hLines: hLines,
             vLines: vLines,
             points: points
