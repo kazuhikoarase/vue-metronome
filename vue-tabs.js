@@ -52,8 +52,12 @@
 */
           '<path v-for="hLine in params.hLines" :d="hLine" :style="hLineStyle"></path>' +
           '<path v-for="vLine in params.vLines" :d="vLine" :style="vLineStyle"></path>' +
-          '<path v-if="params.hOffset == 0" ' +
-          ' :d="params.vLines[0]" :style="vLineStyle" transform="translate(1.5 0)"></path>' +
+          '<rect v-if="params.rootRect"' +
+            ' :x="params.rootRect.x"' +
+            ' :y="params.rootRect.y"' +
+            ' :width="params.rootRect.width"' +
+            ' :height="params.rootRect.height"' +
+          ' :style="rootStyle" ></rect>' +
           '<circle v-for="point in params.points"' +
             ' :cx="point.x" :cy="point.y" :r="params.noteRadius"' +
             ' :style="point.open? openNoteStyle : noteStyle"></circle>' +
@@ -78,9 +82,12 @@
           var width = (numFlets + 1) * 10 + hGap * 2;
           var height = notes.length * 10 + vGap * 2;
           var noteRadius = 4;
+          var rootOffset = 1.5;
+          var rootRect = null;
 
           var h = height - vGap * 2;
           var w = width - hGap * 2;
+          var hOffset = 0;
 
           var hLines = notes.map(function(note, i) {
             var y = vGap + (h / (notes.length - 1) ) * i;
@@ -91,6 +98,10 @@
           for (var i = 0; i <= numFlets; i += 1) {
             var x = hGap + w / numFlets * i;
             vLines.push('M' + x + ' ' + vGap + 'L' + x + ' ' + (height - vGap) );
+            if (i == 0 && hOffset == 0) {
+              rootRect = { x: x - rootOffset, y: vGap,
+                  width: rootOffset, height: height - vGap * 2 };
+            }
           }
 
           var points = notes.map(function(note, i) {
@@ -98,6 +109,9 @@
             var open = n == 0;
             var x = hGap + w / numFlets * (n - 0.5);
             var y = vGap + (h / (notes.length - 1) ) * i;
+            if (open && hOffset == 0) {
+              x -= rootOffset;
+            }
             return { x: x, y: y, open: open };
           });
 
@@ -108,20 +122,23 @@
             hGap: hGap,
             vGap: vGap,
             noteRadius: noteRadius,
-            hOffset: 0,
+            rootRect: rootRect,
             hLines: hLines,
             vLines: vLines,
             points: points
           };
         },
         hLineStyle: function() {
-          return 'stroke: #000; fill: none;';
+          return 'stroke: #000; fill: none; stroke-linecap: square;'
         },
         vLineStyle: function() {
-          return 'stroke: #000; fill: none;';
+          return 'stroke: #000; fill: none; stroke-linecap: square;';
         },
         noteStyle: function() {
           return 'stroke: #000; fill: #000;';
+        },
+        rootStyle: function() {
+          return 'stroke: 000; fill: #000;';
         },
         openNoteStyle: function() {
           return 'stroke: #000; fill: none;';
