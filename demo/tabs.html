@@ -23,8 +23,38 @@ FOOTER { text-align: right; }
       src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149"
       class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
   </header>
+
   <div id="app" v-cloak @mousedown.prevent>
-    <tab v-for="tab in tabs" :data="tab"></tab>
+    <tab code="C"></tab><tab code="F"></tab><br/>
+    <tab code="Dm"></tab><tab code="Fm"></tab><br/>
+    <tab code="D7"></tab><tab code="G7"></tab><br/>
+    <tab code="Em"></tab><tab code="Am"></tab><br/>
+    <tab code="E7"></tab><tab code="A7"></tab><br/>
+
+    <tab code="C"></tab>
+    <tab code="G7"></tab>
+    <tab code="Am"></tab>
+    <tab code="C7"></tab>
+
+    <br/>
+
+    <tab code="F"></tab>
+    <tab code="Am"></tab>
+    <tab code="D7"></tab>
+    <tab code="G7"></tab>
+    <br/>
+
+    <tab code="F"></tab>
+    <tab code="G7"></tab>
+    <tab code="C"></tab>
+    <tab code="Am"></tab>
+
+    <br/>
+
+    <tab code="F"></tab>
+    <tab code="G7"></tab>
+    <tab code="C"></tab>
+
   </div>
 
   <script>
@@ -32,14 +62,6 @@ FOOTER { text-align: right; }
 new Vue({
   el: '#app',
   data: {
-    tabs: [
-      { name: 'C',  notes: [ 0, 0, 0, 3 ] },
-      { name: 'G7', notes: [ 0, 2, 1, 2 ] },
-      { name: 'Am', notes: [ 2, 0, 0, 0 ] },
-      { name: 'C7', notes: [ 0, 0, 0, 1 ] },
-      { name: 'F',  notes: [ 2, 0, 1, 0 ] },
-      { name: 'D7', notes: [ 2, 0, 2, 0 ] }
-    ]
   },
   methods: {
   }
