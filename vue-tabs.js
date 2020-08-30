@@ -37,19 +37,15 @@
     A7: { name: 'A7', notes: [ 0, 1, 0, 0 ] }
   };
 
+  var textBBox = null;
+
   var components = {
     tab: {
-      template: '<span style="display:inline-block;">' +
-        '<label>{{params.name}}</label><br/>' +
-        '<svg xmlns="http://www.w3.org/2000/svg"' +
-          ' :width="sWidth" :height="sHeight"' +
+      template: '<svg xmlns="http://www.w3.org/2000/svg"' +
+          ' x="0px" y="0px" :width="sWidth" :height="sHeight"' +
           ' :view-box.camel="sViewBox">' +
-/*
-          '<rect x="0" y="0" :width="params.width" :height="params.height"' +
-            ' stroke="none" fill="#000" opacity="0.1"></rect>' +
-          '<path :d="\'M0 0L\' + params.width + \' \' + params.height" stroke="#00c" fill="none"></path>' +
-          '<path :d="\'M\' + params.width + \' 0L0 \' + params.height" stroke="#00c" fill="none"></path>' +
-*/
+          '<text ref="name" x="0" :fill="color"' +
+            ' :y="textBBox? textBBox.height : 0">{{params.name}}</text>' +
           '<path v-for="hLine in params.hLines" :d="hLine" :style="hLineStyle"></path>' +
           '<path v-for="vLine in params.vLines" :d="vLine" :style="vLineStyle"></path>' +
           '<rect v-if="params.rootRect"' +
@@ -61,10 +57,25 @@
           '<circle v-for="point in params.points"' +
             ' :cx="point.x" :cy="point.y" :r="params.noteRadius"' +
             ' :style="point.open? openNoteStyle : noteStyle"></circle>' +
-        '</svg></span>',
+        '</svg>',
+      mounted: function() {
+        if (!textBBox) {
+          var tx = this.$refs.name.textContent;
+          this.$refs.name.textContent = 'M';
+          textBBox = this.$refs.name.getBBox();
+          this.$refs.name.textContent = tx;
+        }
+        this.textBBox = textBBox;
+      },
+      data: function() {
+        return {
+          textBBox: null
+        };
+      },
       props: {
         code: { type: String, default: '' },
-        data: { type: Object, default: function() { return codes['Z']; } }
+        data: { type: Object, default: function() { return codes['Z']; } },
+        color: { type: String, default: '#000' }
       },
       computed: {
         sWidth: function() { return this.params.width + 'px'; },
@@ -81,6 +92,12 @@
           var vGap = 6;
           var width = (numFlets + 1) * 10 + hGap * 2;
           var height = notes.length * 10 + vGap * 2;
+
+          var tHeight = 0;
+          if (this.textBBox) {
+            tHeight = this.textBBox.height;
+          }
+
           var noteRadius = 4;
           var rootOffset = 1.5;
           var rootRect = null;
@@ -88,18 +105,20 @@
           var h = height - vGap * 2;
           var w = width - hGap * 2;
           var hOffset = 0;
+          var vTop = vGap + tHeight;
 
           var hLines = notes.map(function(note, i) {
-            var y = vGap + (h / (notes.length - 1) ) * i;
+            var y = vTop + (h / (notes.length - 1) ) * i;
             return 'M' + hGap + ' ' + y + 'L' + (width - hGap) + ' ' + y;
           });
 
           var vLines = [];
           for (var i = 0; i <= numFlets; i += 1) {
             var x = hGap + w / numFlets * i;
-            vLines.push('M' + x + ' ' + vGap + 'L' + x + ' ' + (height - vGap) );
+            vLines.push('M' + x + ' ' + vTop +
+                'L' + x + ' ' + (vTop + height - vGap * 2) );
             if (i == 0 && hOffset == 0) {
-              rootRect = { x: x - rootOffset, y: vGap,
+              rootRect = { x: x - rootOffset, y: vTop,
                   width: rootOffset, height: height - vGap * 2 };
             }
           }
@@ -108,7 +127,7 @@
             var n = notes[notes.length - i - 1];
             var open = n == 0;
             var x = hGap + w / numFlets * (n - 0.5);
-            var y = vGap + (h / (notes.length - 1) ) * i;
+            var y = vTop + (h / (notes.length - 1) ) * i;
             if (open && hOffset == 0) {
               x -= rootOffset;
             }
@@ -118,30 +137,31 @@
           return {
             name: data.name,
             width: width,
-            height: height,
+            height: tHeight + height,
             hGap: hGap,
             vGap: vGap,
             noteRadius: noteRadius,
             rootRect: rootRect,
             hLines: hLines,
             vLines: vLines,
-            points: points
+            points: points,
+            textBBox: this.textBBox
           };
         },
         hLineStyle: function() {
-          return 'stroke: #000; fill: none; stroke-linecap: square;'
+          return 'stroke: ' + this.color + '; fill: none; stroke-linecap: square;'
         },
         vLineStyle: function() {
-          return 'stroke: #000; fill: none; stroke-linecap: square;';
+          return 'stroke: ' + this.color + '; fill: none; stroke-linecap: square;';
         },
         noteStyle: function() {
-          return 'stroke: #000; fill: #000;';
+          return 'stroke: ' + this.color + '; fill: ' + this.color + ';';
         },
         rootStyle: function() {
-          return 'stroke: 000; fill: #000;';
+          return 'stroke: null; fill: ' + this.color + ';';
         },
         openNoteStyle: function() {
-          return 'stroke: #000; fill: none;';
+          return 'stroke: ' + this.color + '; fill: none;';
         }
       }
     }
